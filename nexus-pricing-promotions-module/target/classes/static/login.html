@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Nexus | Login</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .login-box {
+        width: 350px;
+        margin: 20vh auto;
+        background: var(--card);
+        padding: 40px;
+        border-radius: 12px;
+        text-align: center;
+        border-bottom: 4px solid var(--accent-teal);
+      }
+      input {
+        width: 100%;
+        padding: 12px;
+        margin: 15px 0;
+        background: var(--bg-dark);
+        border: 1px solid var(--text-gray);
+        color: white;
+        border-radius: 5px;
+        box-sizing: border-box;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: var(--accent-teal);
+        color: var(--bg-dark);
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="login-box">
+      <img src="NexuesLogo.png" style="width: 180px; margin-bottom: 20px" />
+      <h3 style="color: var(--white)">GATEWAY ACCESS</h3>
+      <input type="text" id="mId" placeholder="MANAGER ID (e.g., M01)" />
+      <button onclick="login()">AUTHORIZE</button>
+      <p id="err" style="color: #ff4d4d; margin-top: 15px; font-size: 12px"></p>
+    </div>
+    <script>
+      async function login() {
+        const managerId = document.getElementById("mId").value.trim().toUpperCase();
+        const res = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: managerId }),
+        });
+        const result = await res.text();
+        if (result === "OK" || result === "SUCCESS") {
+          window.location.href = "index.html";
+        } else {
+          document.getElementById("err").innerText =
+            "ACCESS DENIED: ID NOT RECOGNIZED";
+        }
+      }
+    </script>
+  </body>
+</html>

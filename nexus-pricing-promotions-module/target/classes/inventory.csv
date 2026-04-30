@@ -1,0 +1,31 @@
+id,name,category,price,quantity,threshold,warehouse,storage_type,supplierId,supplierName
+D001,MacBook Pro 14,Laptop,2000,15,5,Cairo,Standard,S01,Nex Supply Cairo
+D002,iPhone 15 Pro,Phone,1100,50,10,Alexandria,High-Security,S02,Alex Parts Ltd
+D003,Samsung S24 Ultra,Phone,1200,4,8,Cairo,Standard,S01,Nex Supply Cairo
+D004,Dell XPS 13,Laptop,1500,10,3,Alexandria,Standard,S02,Alex Parts Ltd
+D005,iPad Air M2,Tablet,600,25,5,Cairo,Standard,S01,Nex Supply Cairo
+A001,USB-C Hub 7-in-1,Accessory,50,100,20,Cairo,Standard,S01,Nex Supply Cairo
+A002,Mechanical Keyboard,Accessory,120,40,10,Alexandria,Standard,S02,Alex Parts Ltd
+A003,Logitech MX Master 3,Accessory,99,2,5,Cairo,Standard,S01,Nex Supply Cairo
+A004,Monitor Arm Dual,Accessory,80,15,5,Alexandria,Standard,S02,Alex Parts Ltd
+A005,HDMI 2.1 Cable,Accessory,20,200,30,Cairo,Standard,S01,Nex Supply Cairo
+D006,Sony WH-1000XM5,Headphones,350,20,5,Alexandria,Standard,S02,Alex Parts Ltd
+D007,AirPods Pro 2,Headphones,250,60,15,Cairo,Standard,S01,Nex Supply Cairo
+D008,Apple Watch Ultra,Smartwatch,800,12,4,Alexandria,High-Security,S02,Alex Parts Ltd
+D009,GoPro Hero 12,Camera,400,8,10,Cairo,Standard,S01,Nex Supply Cairo
+D010,ASUS ROG Strix,Laptop,2500,5,2,Alexandria,Standard,S02,Alex Parts Ltd
+A006,Laptop Stand,Accessory,35,80,10,Cairo,Standard,S01,Nex Supply Cairo
+A007,Thunderbolt 4 Dock,Accessory,300,10,3,Alexandria,Standard,S02,Alex Parts Ltd
+A008,Privacy Screen Filter,Accessory,40,50,10,Cairo,Standard,S01,Nex Supply Cairo
+A009,Laptop Sleeve 14,Accessory,25,120,20,Alexandria,Standard,S02,Alex Parts Ltd
+A010,GaN Charger 100W,Accessory,60,75,15,Cairo,Standard,S01,Nex Supply Cairo
+D011,Nvidia RTX 4090,GPU,1800,3,5,Alexandria,High-Security,S02,Alex Parts Ltd
+D012,Ryzen 9 7950X,CPU,600,15,5,Cairo,Standard,S01,Nex Supply Cairo
+D013,Samsung T7 2TB SSD,Storage,160,30,10,Alexandria,Standard,S02,Alex Parts Ltd
+D014,Logitech C920 WebCam,Peripherals,80,45,10,Cairo,Standard,S01,Nex Supply Cairo
+D015,Blue Yeti Mic,Peripherals,130,22,5,Alexandria,Standard,S02,Alex Parts Ltd
+A011,MicroSD 512GB,Storage,45,150,25,Cairo,Standard,S01,Nex Supply Cairo
+A012,Phone Tripod,Accessory,15,90,15,Alexandria,Standard,S02,Alex Parts Ltd
+A013,Screen Cleaning Kit,Accessory,10,300,50,Cairo,Standard,S01,Nex Supply Cairo
+A014,Cable Organizer,Accessory,12,500,40,Alexandria,Standard,S02,Alex Parts Ltd
+A015,Mouse Pad Extended,Accessory,20,100,20,Cairo,Standard,S01,Nex Supply Cairo

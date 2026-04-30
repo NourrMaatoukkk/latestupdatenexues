@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Nexus Logistics | Global Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="sidebar">
+      <img src="NexuesLogo.png" alt="Nexus Logo" class="app-logo" />
+
+      <div class="warehouse-info">
+        <span>ACTIVE MANAGER</span>
+        <p id="manager-display">Verifying...</p>
+      </div>
+
+      <nav>
+        <a
+          href="#"
+          id="link-inventory"
+          class="active"
+          onclick="showPage('inventory')"
+          >📦 Inventory Stock</a
+        >
+        <a href="#" id="link-suppliers" onclick="showPage('suppliers')"
+          >🏷️ Suppliers</a
+        >
+        <a href="#" id="link-hubs" onclick="showPage('hubs')"
+          >🏭 Warehouse Hubs</a
+        >
+        <a href="#" id="link-analytics" onclick="showPage('analytics')"
+          >📊 Analytics</a
+        >
+        <a href="#" id="link-config" onclick="showPage('config')"
+          >⚙️ System Config</a
+        >
+        <a href="#" id="link-pricing" onclick="showPage('pricing')"
+          >💰 Pricing Engine</a
+        >
+        <a href="login.html" style="margin-top: 50px; color: #ff4d4d"
+          >🚪 Sign Out</a
+        >
+      </nav>
+    </div>
+
+    <div class="main">
+      <header>
+        <h1 id="page-title">Inventory Stock</h1>
+        <div id="status-indicator">HUB SYNCHRONIZED</div>
+      </header>
+
+      <div class="track-dock">
+        <div id="branch-track-panel" class="side-track" style="display: none">
+          <h4>Branch Restock Track</h4>
+          <p>Request out-of-stock items directly to M00.</p>
+          <select id="branch-out-stock-select"></select>
+          <button onclick="requestRestockFromSidebar()">
+            Request Selected Item
+          </button>
+          <div id="branch-track-feed" class="side-track-feed"></div>
+        </div>
+
+        <div id="m00-track-panel" class="side-track" style="display: none">
+          <h4>M00 Supply Command</h4>
+          <p>
+            Receive branch requests, contact supplier, get instant confirmation.
+          </p>
+          <div id="m00-track-feed" class="side-track-feed"></div>
+        </div>
+      </div>
+
+      <!-- INVENTORY -->
+      <div id="view-inventory" class="content-section">
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Product Name</th>
+                <th>Supplier</th>
+                <th>Stock</th>
+                <th>Category</th>
+                <th>Condition</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- HUBS -->
+      <div id="view-hubs" class="content-section" style="display: none">
+        <div class="grid-container">
+          <div class="hub-card">
+            <h3>Cairo Central Hub</h3>
+            <span class="storage-tag">Condition: Standard</span>
+            <p>Primary distribution center for North Africa.</p>
+          </div>
+
+          <div class="hub-card">
+            <h3>Alexandria Port</h3>
+            <span class="storage-tag">Condition: High-Security</span>
+            <p>International shipping and receiving gateway.</p>
+          </div>
+
+          <div class="hub-card">
+            <h3>Giza Logistics Park</h3>
+            <span class="storage-tag">Condition: Cold Storage</span>
+            <p>Specialized handling for temperature-sensitive items.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="view-analytics" class="content-section" style="display: none">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <small>TOTAL SKU ITEMS</small>
+            <h2 id="stat-total">0</h2>
+          </div>
+
+          <div class="stat-box" style="border-bottom: 4px solid #ff4d4d">
+            <small>LOW STOCK ALERTS</small>
+            <h2 id="stat-low">0</h2>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONFIG -->
+      <div id="view-config" class="content-section" style="display: none">
+        <div class="table-container">
+          <h3>Global System Variables</h3>
+          <p>Managed via <b>Singleton Pattern</b> across all instances.</p>
+
+          <div class="config-row">
+            <span>Currency:</span>
+            <strong>USD / EGP</strong>
+          </div>
+
+          <div class="config-row">
+            <span>Base Tax Rate:</span>
+            <strong>14%</strong>
+          </div>
+
+          <div class="config-row">
+            <span>Cloud Persistence:</span>
+            <strong style="color: #64ffda">Firebase Active</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- SUPPLIERS -->
+      <div id="view-suppliers" class="content-section" style="display: none">
+        <div class="table-container">
+          <h3>Suppliers</h3>
+
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Contact</th>
+                <th>Email</th>
+                <th>Branch</th>
+              </tr>
+            </thead>
+            <tbody id="suppliers-table"></tbody>
+          </table>
+
+          <h4>Add Supplier</h4>
+
+          <div>
+            <input id="sup-id" placeholder="ID (e.g. S04)" />
+            <input id="sup-name" placeholder="Name" />
+            <input id="sup-contact" placeholder="Contact" />
+            <input id="sup-email" placeholder="Email" />
+            <input id="sup-branch" placeholder="Branch" />
+            <button onclick="createSupplier()">Create</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- PRICING -->
+      <div id="view-pricing" class="content-section" style="display: none">
+        <div class="table-container">
+          <h3>Dynamic Pricing Engine</h3>
+
+          <br />
+
+          <label>Select Product</label>
+          <br /><br />
+
+          <select
+            id="price-product"
+            onchange="
+              resetPricingResult();
+              updateBasePrice();
+            "
+            style="
+              width: 100%;
+              padding: 12px;
+              background: #0a192f;
+              color: white;
+              border: 1px solid #8892b0;
+              border-radius: 6px;
+            "
+          ></select>
+
+          <br /><br />
+
+          <div class="config-row">
+            <span>Original Price:</span>
+            <strong id="base-price">$0.00</strong>
+          </div>
+
+          <br />
+
+          <label>Choose Strategy</label>
+          <br /><br />
+
+          <label
+            ><input
+              type="radio"
+              name="strategy"
+              value="normal"
+              checked
+              onchange="updateStrategyNote()"
+            />
+            Normal</label
+          ><br />
+          <label
+            ><input
+              type="radio"
+              name="strategy"
+              value="vip"
+              onchange="updateStrategyNote()"
+            />
+            VIP</label
+          ><br />
+          <label
+            ><input
+              type="radio"
+              name="strategy"
+              value="blackfriday"
+              onchange="updateStrategyNote()"
+            />
+            Black Friday</label
+          >
+
+          <p
+            id="strategy-note"
+            style="color: #64ffda; font-size: 14px; margin-top: 12px"
+          >
+            Standard pricing with tax applied.
+          </p>
+
+          <br />
+
+          <label>Extra Options</label>
+          <br /><br />
+
+          <label><input type="checkbox" id="gift" /> Gift Wrap (+50)</label
+          ><br />
+          <label
+            ><input type="checkbox" id="insurance" /> Insurance (+100)</label
+          >
+
+          <br /><br />
+
+          <button
+            onclick="calculatePrice()"
+            style="
+              padding: 12px 24px;
+              background: #64ffda;
+              color: #0a192f;
+              border: none;
+              border-radius: 6px;
+              font-weight: bold;
+              font-size: 15px;
+              cursor: pointer;
+              transition: 0.3s;
+              box-shadow: 0 4px 12px rgba(100, 255, 218, 0.25);
+            "
+          >
+            Calculate Final Price
+          </button>
+
+          <button
+            onclick="resetPricingForm()"
+            style="
+              padding: 12px 24px;
+              background: #112240;
+              color: #64ffda;
+              border: 1px solid #64ffda;
+              border-radius: 6px;
+              font-weight: bold;
+              font-size: 15px;
+              cursor: pointer;
+              margin-left: 10px;
+            "
+          >
+            Reset
+          </button>
+
+          <div class="stat-box" style="margin-top: 25px">
+            <small>FINAL CALCULATED PRICE</small>
+            <h2 id="final-price">$0.00</h2>
+            <p id="price-product-name"></p>
+          </div>
+
+          <div class="table-container" style="margin-top: 25px">
+            <h3>Managerial Restock Flow</h3>
+            <p>
+              Branch managers can request restock. M00 receives and coordinates
+              suppliers.
+            </p>
+
+            <div id="restock-actions" class="restock-controls">
+              <button type="button" onclick="requestRestock()">
+                Request Restock
+              </button>
+            </div>
+
+            <div
+              id="m00-readonly-note"
+              style="
+                display: none;
+                color: #64ffda;
+                font-size: 13px;
+                margin-top: 8px;
+              "
+            >
+              M00 dashboard is receive-only. Restock requests are submitted by
+              branch managers.
+            </div>
+
+            <div id="notifications-box" class="notification-zone"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function resetPricingResult() {
+        document.getElementById("final-price").innerText = "$0.00";
+        document.getElementById("price-product-name").innerText = "";
+      }
+
+      function updateStrategyNote() {
+        const selected = document.querySelector(
+          'input[name="strategy"]:checked',
+        ).value;
+
+        let text = "";
+
+        if (selected === "normal") {
+          text = "Standard pricing with tax applied.";
+        }
+
+        if (selected === "vip") {
+          text = "VIP customers receive 10% discount.";
+        }
+
+        if (selected === "blackfriday") {
+          text = "Black Friday gives 20% seasonal discount.";
+        }
+
+        document.getElementById("strategy-note").innerText = text;
+
+        resetPricingResult();
+      }
+
+      function resetPricingForm() {
+        document.getElementById("gift").checked = false;
+        document.getElementById("insurance").checked = false;
+
+        document.querySelector(
+          'input[name="strategy"][value="normal"]',
+        ).checked = true;
+
+        updateStrategyNote();
+        updateBasePrice();
+        resetPricingResult();
+      }
+
+      function showPage(pageId) {
+        document
+          .querySelectorAll(".content-section")
+          .forEach((s) => (s.style.display = "none"));
+
+        document
+          .querySelectorAll("nav a")
+          .forEach((a) => a.classList.remove("active"));
+
+        document.getElementById("view-" + pageId).style.display = "block";
+        document.getElementById("link-" + pageId).classList.add("active");
+
+        const titles = {
+          inventory: "Inventory Stock",
+          suppliers: "Suppliers",
+          hubs: "Warehouse Hubs",
+          analytics: "System Analytics",
+          config: "System Configuration",
+          pricing: "Pricing Engine",
+        };
+
+        document.getElementById("page-title").innerText = titles[pageId];
+
+        if (pageId === "analytics") runAnalytics();
+        if (pageId === "suppliers") loadSuppliers();
+
+        if (pageId === "pricing") {
+          loadPricingProducts();
+          document.getElementById("manager-display").innerText =
+            "Ahmed Alyasergy (Pricing Manager)";
+        } else {
+          document.getElementById("manager-display").innerText =
+            "Nour Maatouk (Cairo)";
+        }
+      }
+
+      function renderInventoryTable(data) {
+        document.getElementById("inventory-table").innerHTML = data
+          .map(
+            (p) => `
+  <tr>
+    <td><span class="id-badge">${p.id}</span></td>
+    <td>${p.name}</td>
+    <td>${p.supplierName || p.supplierId || "-"}</td>
+    <td class="${p.quantity <= p.threshold ? "low-text" : ""}">
+      ${p.quantity}
+    </td>
+    <td>${p.category}</td>
+    <td><span class="storage-tag">${p.storage_type}</span></td>
+  </tr>
+  `,
+          )
+          .join("");
+      }
+
+      async function initialize() {
+        const auth = await fetch("/api/auth/session");
+        const boss = await auth.json().catch(() => null);
+
+        if (!boss) {
+          window.location.href = "login.html";
+          return;
+        }
+
+        const res = await fetch("/api/inventory/list");
+        const data = await res.json();
+
+        window.currentManager = boss;
+
+        window.cachedData = data;
+        window.productsData = data;
+
+        renderInventoryTable(data);
+
+        document.getElementById("manager-display").innerText =
+          boss.name + " (" + boss.section + ")";
+
+        configureRestockAccess();
+        refreshSidebarTracks();
+      }
+
+      async function loadSuppliers() {
+        const res = await fetch("/api/suppliers/list");
+        const data = await res.json();
+
+        document.getElementById("suppliers-table").innerHTML = data
+          .map(
+            (s) => `
+  <tr>
+    <td><span class="id-badge">${s.id}</span></td>
+    <td>${s.name}</td>
+    <td>${s.contact}</td>
+    <td>${s.email}</td>
+    <td>${s.branch}</td>
+  </tr>
+  `,
+          )
+          .join("");
+      }
+
+      async function createSupplier() {
+        const s = {
+          id: document.getElementById("sup-id").value.trim(),
+          name: document.getElementById("sup-name").value.trim(),
+          contact: document.getElementById("sup-contact").value.trim(),
+          email: document.getElementById("sup-email").value.trim(),
+          branch: document.getElementById("sup-branch").value.trim(),
+        };
+
+        if (!s.id) {
+          alert("ID required");
+          return;
+        }
+
+        const res = await fetch("/api/suppliers/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(s),
+        });
+
+        const txt = await res.text();
+
+        if (txt === "OK") {
+          alert("Supplier created");
+          loadSuppliers();
+        } else {
+          alert("Failed");
+        }
+      }
+
+      function runAnalytics() {
+        const data = window.cachedData || [];
+
+        document.getElementById("stat-total").innerText = data.length;
+
+        document.getElementById("stat-low").innerText = data.filter(
+          (p) => p.quantity <= p.threshold,
+        ).length;
+      }
+
+      function loadPricingProducts() {
+        const data = window.productsData || [];
+
+        document.getElementById("price-product").innerHTML = data
+          .map(
+            (p) => `
+  <option value="${p.id}">
+    ${p.name}
+  </option>
+  `,
+          )
+          .join("");
+
+        updateBasePrice();
+        updateStrategyNote();
+        resetPricingResult();
+      }
+
+      function updateBasePrice() {
+        const id = document.getElementById("price-product").value;
+
+        const product = window.productsData.find((p) => p.id == id);
+
+        document.getElementById("base-price").innerText =
+          "$" + Number(product.price).toFixed(2);
+      }
+
+      function calculatePrice() {
+        const id = document.getElementById("price-product").value;
+
+        const product = window.productsData.find((p) => p.id == id);
+
+        let price = Number(product.price);
+
+        const strategy = document.querySelector(
+          'input[name="strategy"]:checked',
+        ).value;
+
+        if (strategy === "vip") {
+          price *= 0.9;
+        }
+
+        if (strategy === "blackfriday") {
+          price *= 0.8;
+        }
+
+        if (document.getElementById("gift").checked) {
+          price += 50;
+        }
+
+        if (document.getElementById("insurance").checked) {
+          price += 100;
+        }
+
+        price *= 1.14;
+
+        document.getElementById("final-price").innerText =
+          "$" + price.toFixed(2);
+
+        document.getElementById("price-product-name").innerText = product.name;
+      }
+
+      async function sendRestockRequest() {
+        const branch = document.getElementById("restock-branch").value;
+        const item = document.getElementById("restock-item").value.trim();
+
+        if (!item) {
+          alert("Please enter an item name or ID.");
+          return;
+        }
+
+        const res = await fetch("/api/request-restock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ branch, item }),
+        });
+
+        if (!res.ok) {
+          alert("Failed to send restock request.");
+          return;
+        }
+
+        document.getElementById("restock-item").value = "";
+        await loadNotifications();
+      }
+
+      async function loadNotifications() {
+        const zone =
+          document.getElementById("notifications-box") ||
+          document.getElementById("notification-zone");
+        if (!zone) {
+          return;
+        }
+
+        try {
+          const res = await fetch("/api/notifications");
+          const logs = await res.json();
+
+          const sorted = [...logs].reverse();
+
+          zone.innerHTML = sorted
+            .map((log) => {
+              const tone = log.includes("APPROVED")
+                ? "approved"
+                : log.includes("DECLINED")
+                  ? "declined"
+                  : "request";
+
+              return `<div class="notification-card ${tone}">${log}</div>`;
+            })
+            .join("");
+
+          renderSideTrackFeeds(sorted);
+        } catch (_e) {
+          zone.innerHTML =
+            '<div class="notification-card declined">Notification service unavailable.</div>';
+          renderSideTrackFeeds([]);
+        }
+      }
+
+      function getActiveBranch() {
+        const manager = window.currentManager || {};
+        const section = (manager.section || "").trim();
+        if (section) {
+          return section;
+        }
+        return "Unknown Branch";
+      }
+
+      function isM00Manager() {
+        const manager = window.currentManager || {};
+        return (manager.id || "").toUpperCase() === "M00";
+      }
+
+      function isBranchManager() {
+        const managerId = (
+          (window.currentManager || {}).id || ""
+        ).toUpperCase();
+        return (
+          managerId === "M01" || managerId === "M02" || managerId === "M03"
+        );
+      }
+
+      async function postRestockRequest(branch, item) {
+        const queryUrl =
+          "/api/request-restock?branch=" +
+          encodeURIComponent(branch) +
+          "&item=" +
+          encodeURIComponent(item);
+
+        let res = await fetch(queryUrl, { method: "POST" });
+        if (res.ok) {
+          return true;
+        }
+
+        // Fallback for any running instance still expecting JSON body format.
+        res = await fetch("/api/request-restock", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ branch, item }),
+        });
+
+        return res.ok;
+      }
+
+      async function contactSupplierForItem(productId, productName) {
+        try {
+          const queryUrl =
+            "/api/contact-supplier?item=" + encodeURIComponent(productName);
+
+          let res = await fetch(queryUrl, { method: "POST" });
+          if (res.ok) {
+            const message = await res.text();
+            showConfirmationMessage(
+              "✅ Supplier Contacted",
+              productName +
+                " - Supplier confirmed and will begin processing restock immediately.",
+            );
+            setTimeout(() => {
+              loadNotifications();
+            }, 500);
+            return true;
+          }
+
+          // Fallback with JSON body
+          res = await fetch("/api/contact-supplier", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ item: productName }),
+          });
+
+          if (res.ok) {
+            showConfirmationMessage(
+              "✅ Supplier Contacted",
+              productName +
+                " - Supplier confirmed and will begin processing restock immediately.",
+            );
+            setTimeout(() => {
+              loadNotifications();
+            }, 500);
+            return true;
+          }
+
+          showConfirmationMessage("❌ Error", "Failed to contact supplier.");
+          return false;
+        } catch (error) {
+          console.error("Error contacting supplier:", error);
+          showConfirmationMessage(
+            "❌ Error",
+            "Failed to contact supplier: " + error.message,
+          );
+          return false;
+        }
+      }
+
+      function showConfirmationMessage(title, message) {
+        const modal = document.createElement("div");
+        modal.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          background: var(--card);
+          border: 2px solid var(--accent-teal);
+          border-radius: 12px;
+          padding: 30px;
+          max-width: 400px;
+          z-index: 9999;
+          text-align: center;
+          box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        `;
+        modal.innerHTML = `
+          <h3 style="margin: 0 0 10px 0; color: var(--accent-teal); font-size: 18px;">${title}</h3>
+          <p style="margin: 0; color: var(--text-gray); font-size: 14px; line-height: 1.5;">${message}</p>
+          <button onclick="this.parentElement.remove()" style="margin-top: 20px; padding: 8px 20px; background: var(--accent-teal); color: #0a192f; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">OK</button>
+        `;
+        document.body.appendChild(modal);
+        setTimeout(() => {
+          if (modal.parentElement) modal.remove();
+        }, 5000);
+      }
+
+      async function requestRestock() {
+        if (isM00Manager()) {
+          alert("M00 is receive-only and cannot submit restock requests.");
+          return;
+        }
+
+        const sidebarSelect = document.getElementById(
+          "branch-out-stock-select",
+        );
+        const pricingSelect = document.getElementById("price-product");
+        const selectedId =
+          (sidebarSelect && sidebarSelect.value) ||
+          (pricingSelect && pricingSelect.value);
+
+        if (!selectedId) {
+          alert("Please select a product first.");
+          return;
+        }
+
+        const product = (window.productsData || []).find(
+          (p) => p.id == selectedId,
+        );
+        const item = product ? product.name : selectedId;
+        const branch = getActiveBranch();
+
+        const ok = await postRestockRequest(branch, item);
+        if (!ok) {
+          alert("Failed to send restock request.");
+          return;
+        }
+
+        await syncInventoryFromDatabase();
+        await loadNotifications();
+      }
+
+      function configureRestockAccess() {
+        const isM00 = isM00Manager();
+        const actions = document.getElementById("restock-actions");
+        const note = document.getElementById("m00-readonly-note");
+        const branchTrack = document.getElementById("branch-track-panel");
+        const m00Track = document.getElementById("m00-track-panel");
+
+        if (actions) {
+          actions.style.display = isBranchManager() ? "grid" : "none";
+        }
+        if (note) {
+          note.style.display = isM00 ? "block" : "none";
+        }
+        if (branchTrack) {
+          branchTrack.style.display = isBranchManager() ? "block" : "none";
+        }
+        if (m00Track) {
+          m00Track.style.display = isM00 ? "block" : "none";
+        }
+
+        renderRequiredItemsForM00();
+      }
+
+      function refreshSidebarTracks() {
+        if (isBranchManager()) {
+          const outStock = (window.cachedData || []).filter(
+            (p) => Number(p.quantity) <= Number(p.threshold),
+          );
+          const select = document.getElementById("branch-out-stock-select");
+          if (select) {
+            select.innerHTML = outStock.length
+              ? outStock
+                  .map(
+                    (p) =>
+                      `<option value="${p.id}">${p.name} (${p.quantity}/${p.threshold})</option>`,
+                  )
+                  .join("")
+              : '<option value="">No out-of-stock items</option>';
+          }
+        }
+
+        renderRequiredItemsForM00();
+      }
+
+      function renderRequiredItemsForM00() {
+        const m00Feed = document.getElementById("m00-track-feed");
+
+        if (!m00Feed || !isM00Manager()) {
+          return;
+        }
+
+        const requiredItems = (window.cachedData || [])
+          .filter((p) => Number(p.quantity) <= Number(p.threshold))
+          .sort((a, b) => Number(a.quantity) - Number(b.quantity));
+
+        const requiredHtml = requiredItems.length
+          ? requiredItems
+              .map(
+                (p) =>
+                  `<div class="side-track-item"><strong>${p.name}</strong><br />${p.id} | Stock ${p.quantity}/${p.threshold} | ${p.warehouse}<br /><button onclick="contactSupplierForItem('${p.id}', '${p.name}')" style="margin-top: 8px; width: 100%; padding: 6px; font-size: 11px; background: var(--accent-teal); color: #0a192f; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">📞 Contact Supplier</button></div>`,
+              )
+              .join("")
+          : '<div class="side-track-item">No items currently require replenishment.</div>';
+
+        const currentLogs = m00Feed.dataset.logs || "";
+        m00Feed.innerHTML = `
+          <div class="side-track-item" style="font-weight: 700;">Required Items To Stock</div>
+          ${requiredHtml}
+          <div class="side-track-item" style="font-weight: 700; margin-top: 12px;">Incoming Restock Requests</div>
+          ${currentLogs}
+        `;
+      }
+
+      function renderSideTrackFeeds(logs) {
+        const m00Feed = document.getElementById("m00-track-feed");
+        const branchFeed = document.getElementById("branch-track-feed");
+
+        if (m00Feed && isM00Manager()) {
+          const incoming = logs.filter(
+            (l) =>
+              l.includes("requested") ||
+              l.includes("M00 CONTACTED") ||
+              l.includes("SUPPLIER CONFIRMED") ||
+              l.includes("M00 UPDATED BRANCH"),
+          );
+          const incomingHtml = incoming
+            .slice(0, 10)
+            .map((l) => `<div class="side-track-item">${l}</div>`)
+            .join("");
+
+          m00Feed.dataset.logs = incomingHtml;
+          renderRequiredItemsForM00();
+        }
+
+        if (branchFeed && isBranchManager()) {
+          const branch = getActiveBranch();
+          const branchLogs = logs.filter((l) =>
+            l.toLowerCase().includes(branch.toLowerCase()),
+          );
+          branchFeed.innerHTML = branchLogs
+            .slice(0, 8)
+            .map((l) => `<div class="side-track-item">${l}</div>`)
+            .join("");
+        }
+      }
+
+      async function requestRestockFromSidebar() {
+        if (!isBranchManager()) {
+          return;
+        }
+
+        const select = document.getElementById("branch-out-stock-select");
+        if (!select || !select.value) {
+          alert("No out-of-stock item available right now.");
+          return;
+        }
+
+        const product = (window.cachedData || []).find(
+          (p) => p.id === select.value,
+        );
+        if (!product) {
+          alert("Please wait for inventory sync and try again.");
+          return;
+        }
+
+        const branch = getActiveBranch();
+        const item = product.name || product.id;
+
+        const ok = await postRestockRequest(branch, item);
+        if (!ok) {
+          alert("Failed to submit request.");
+          return;
+        }
+
+        await syncInventoryFromDatabase();
+        await loadNotifications();
+      }
+
+      async function syncInventoryFromDatabase() {
+        try {
+          const res = await fetch("/api/inventory/list");
+          if (!res.ok) {
+            return;
+          }
+
+          const data = await res.json();
+          window.cachedData = data;
+          window.productsData = data;
+
+          renderInventoryTable(data);
+          refreshSidebarTracks();
+          renderRequiredItemsForM00();
+        } catch (_e) {
+          // keep current cached view when sync fails
+        }
+      }
+
+      setInterval(loadNotifications, 3000);
+      setInterval(syncInventoryFromDatabase, 5000);
+
+      initialize();
+      loadNotifications();
+    </script>
+  </body>
+</html>
